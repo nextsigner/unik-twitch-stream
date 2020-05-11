@@ -117,7 +117,7 @@ UApplicationWindow{
                 +'-s '+vOUTRES+' -preset '+vQUALITY+' -tune film -acodec aac -threads '+vTHREADS+' -strict normal '
                 +'-bufsize '+vCBR+' "rtmp://'+vSERVER+'.twitch.tv/app/'+vSTREAM_KEY+'"'
             //cmd='cmd /c echo aaa'
-            console.log(cmd)
+            //console.log(cmd)
             //run(cmd, false)
         }
     }
@@ -158,19 +158,6 @@ streaming() {
        -s $OUTRES -preset $QUALITY -tune film -acodec aac -threads $THREADS -strict normal \
        -bufsize $CBR "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
  }
-
- Windows
-C:\Users\qt>"E:/ffmpeg/bin/ffmpeg.exe" -f dshow -i video="ManyCam Virtual Webcam
-" -s 1920x1080 -r 30 -f flv -ac 2 -ar 44100 -vcodec libx264 -g 60 -keyint_min 30
- -b:v 1000k -minrate 1000k -maxrate 1000k -pix_fmt yuv420p -s 1920x1080 -preset
-ultrafast -tune film -acodec aac -threads 2 -strict normal -bufsize 1000k "rtmp:
-//live-fra.twitch.tv/app/live_497299721_cNFdVqcnkWyk1WuYumCIBSh2aDAWET"
-
-C:\Users\qt>"E:/ffmpeg/bin/ffmpeg.exe" -f gdigrab -framerate 10 -i desktop -s 19
-20x1080 -r 30 -f flv -ac 2 -ar 44100 -vcodec libx264 -g 60 -keyint_min 30 -b:v 1
-000k -minrate 1000k -maxrate 1000k -pix_fmt yuv420p -s 1920x1080 -preset ultrafa
-st -tune film -acodec aac -threads 2 -strict normal -bufsize 1000k "rtmp://live-
-fra.twitch.tv/app/live_497299721_cNFdVqcnkWyk1WuYumCIBSh2aDAWET"
 
 */
 
