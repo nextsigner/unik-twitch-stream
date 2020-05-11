@@ -81,7 +81,7 @@ UApplicationWindow{
         }
         Component.onCompleted: {
             unik.debugLog=true
-            let cmd='"E:/ffmpeg/bin/ffmpeg.exe" -list_devices true -f dshow -i dummy'
+            let cmd='"'+unik.getPath(5)+'/ffmpeg/bin/ffmpeg.exe" -list_devices true -f dshow -i dummy'
             run(cmd)
         }
     }
@@ -109,7 +109,7 @@ UApplicationWindow{
             let vCBR="1000k"
             let vQUALITY="ultrafast"
             let vAUDIO_RATE="44100"
-            let vSTREAM_KEY=app.streamKey//"live_497299721_cNFdVqcnkWyk1WuYumCIBSh2aDAWET"
+            let vSTREAM_KEY=app.streamKey
             let vSERVER="live-fra"
             let audioCmd=' -f dshow -i audio="'+uCBAudioDevices.model[uCBAudioDevices.currentIndex]+'"'
             uqp.cmd='"'+unik.getPath(5)+'/ffmpeg/bin/ffmpeg.exe" -f gdigrab -framerate '+vFPS+' -i desktop  -s '+vINRES+'  '+audioCmd+' -f flv -ac 2 -ar '+vAUDIO_RATE+' '
