@@ -1,11 +1,13 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
 import unik.UnikQProcess 1.0
+
 UApplicationWindow{
     id: app
     visible: true
     visibility: "Maximized"
     moduleName: 'unik-twitch-stream'
+    fs:app.width*0.015
     property string streamKey: ''
     Item {
         id: xApp
@@ -24,7 +26,7 @@ UApplicationWindow{
                 }
                 UComboBox{
                     id: uCBAudioDevices
-                    width: parent.width+labelDevices.contentWidth
+                    width: parent.width-labelDevices.contentWidth+app.fs*2
                     anchors.verticalCenter: parent.verticalCenter
                 }
             }
@@ -115,10 +117,7 @@ UApplicationWindow{
             uqp.cmd='"'+unik.getPath(5)+'/ffmpeg/bin/ffmpeg.exe" -f gdigrab -framerate '+vFPS+' -i desktop  -s '+vINRES+'  '+audioCmd+' -f flv -ac 2 -ar '+vAUDIO_RATE+' '
                 +'-vcodec libx264 -g '+vGOP+' -keyint_min '+vGOPMIN+' -b:v '+vCBR+' -minrate '+vCBR+' -maxrate '+vCBR+' -pix_fmt yuv420p '
                 +'-s '+vOUTRES+' -preset '+vQUALITY+' -tune film -acodec aac -threads '+vTHREADS+' -strict normal '
-                +'-bufsize '+vCBR+' "rtmp://'+vSERVER+'.twitch.tv/app/'+vSTREAM_KEY+'"'
-            //cmd='cmd /c echo aaa'
-            //console.log(cmd)
-            //run(cmd, false)
+                +'-bufsize '+vCBR+' "rtmp://'+vSERVER+'.twitch.tv/app/'+vSTREAM_KEY+'"'           
         }
     }
     Shortcut{
@@ -127,7 +126,6 @@ UApplicationWindow{
     }
     Component.onCompleted:  {
         for(var i=0;i<Qt.application.arguments.length;i++){
-            //app.l('-'+i+': '+Qt.application.arguments[i])
             if(Qt.application.arguments[i].indexOf('-twitchStreamKey=')>=0){
                 let m0=Qt.application.arguments[i].split('-twitchStreamKey=')
                 if(m0.length>1){
