@@ -114,10 +114,20 @@ UApplicationWindow{
             let vSTREAM_KEY=app.streamKey
             let vSERVER="live-fra"
             let audioCmd=' -f dshow -i audio="'+uCBAudioDevices.model[uCBAudioDevices.currentIndex]+'"'
-            uqp.cmd='"'+unik.getPath(5)+'/ffmpeg/bin/ffmpeg.exe" -f gdigrab -framerate '+vFPS+' -i desktop  -s '+vINRES+'  '+audioCmd+' -f flv -ac 2 -ar '+vAUDIO_RATE+' '
-                +'-vcodec libx264 -g '+vGOP+' -keyint_min '+vGOPMIN+' -b:v '+vCBR+' -minrate '+vCBR+' -maxrate '+vCBR+' -pix_fmt yuv420p '
-                +'-s '+vOUTRES+' -preset '+vQUALITY+' -tune film -acodec aac -threads '+vTHREADS+' -strict normal '
-                +'-bufsize '+vCBR+' "rtmp://'+vSERVER+'.twitch.tv/app/'+vSTREAM_KEY+'"'           
+            if(Qt.platform.os==='windows'){
+                uqp.cmd='"'+unik.getPath(5)+'/ffmpeg/bin/ffmpeg.exe" -f gdigrab -framerate '+vFPS+' -i desktop  -s '+vINRES+'  '+audioCmd+' -f flv -ac 2 -ar '+vAUDIO_RATE+' '
+                        +'-vcodec libx264 -g '+vGOP+' -keyint_min '+vGOPMIN+' -b:v '+vCBR+' -minrate '+vCBR+' -maxrate '+vCBR+' -pix_fmt yuv420p '
+                        +'-s '+vOUTRES+' -preset '+vQUALITY+' -tune film -acodec aac -threads '+vTHREADS+' -strict normal '
+                        +'-bufsize '+vCBR+' "rtmp://'+vSERVER+'.twitch.tv/app/'+vSTREAM_KEY+'"'
+            }
+            if(Qt.platform.os==='linux'){
+                uqp.cmd='ffmpeg -f x11grab -s '+vINRES+'  -r '+vFPS+' -r 25 -i :0.0+0,0 -f pulse -i mimodulo.monitor  -f flv -ac 2 -ar '+vAUDIO_RATE+' '
+                        +'-vcodec libx264 -g '+vGOP+' -keyint_min '+vGOPMIN+' -b:v '+vCBR+' -minrate '+vCBR+' -maxrate '+vCBR+' -pix_fmt yuv420p '
+                        +'-s '+vOUTRES+' -preset '+vQUALITY+' -tune film -acodec aac -threads '+vTHREADS+' -strict -2 '
+                        +'-bufsize '+vCBR+' "rtmp://'+vSERVER+'.twitch.tv/app/'+vSTREAM_KEY+'"'
+                console.log(uqp.cmd)
+            }
+
         }
     }
     Shortcut{
@@ -138,6 +148,8 @@ UApplicationWindow{
 
 /*
   GNU/Linux
+  pactl load-module module-null-sink sink_name=mimodulo&&pactl load-module module-loopback source=0 sink=mimodulo&&pactl load-module module-loopback source=1 sink=mimodulo&&ffmpeg -f x11grab -s 1280x720 -r 25 -i :0.0+0,0 -f pulse -i mimodulo.monitor -f flv -ac 2 -ar 44100 -vcodec libx264 -g 60 -keyint_min 30 -b:v 1000k -minrate 1000k -maxrate 1000k -pix_fmt yuv420p -s 1280x720 -preset ultrafast -tune film -acodec aac -threads 2 -strict -2
+
 streaming() {
      INRES="1920x1080" # input resolution
      OUTRES="1920x1080" # output resolution
@@ -157,6 +169,8 @@ streaming() {
        -bufsize $CBR "rtmp://$SERVER.twitch.tv/app/$STREAM_KEY"
  }
 
+
+ ffmpeg -f x11grab -s 1280x720 -r 25 -i :0.0+0,0 -f pulse -i 0 -f flv -ac 2 -ar 44100 -vcodec libx264 -g 60 -keyint_min 30 -b:v 1000k -minrate 1000k -maxrate 1000k -pix_fmt yuv420p -s 1280x720 -preset ultrafast -tune film -acodec aac -threads 2 -strict -2 -bufsize 1000k rtmp://live-fra.twitch.tv/app/live_497299721_1IrKTb3OdDULZtfNdsRfWLWF4bkVW2
 */
 
 
