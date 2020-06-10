@@ -1,6 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
 import unik.UnikQProcess 1.0
+import QtQuick.Window 2.0
 
 UApplicationWindow{
     id: app
@@ -9,10 +10,13 @@ UApplicationWindow{
     moduleName: 'unik-twitch-stream'
     fs:app.width*0.015
     property string streamKey: ''
+
+    property string currentCMD: ''
     Item {
         id: xApp
         anchors.fill: parent
         Column{
+            spacing: app.fs*0.5
             anchors.centerIn: parent
             UText{text:app.moduleName;font.pixelSize: app.fs*2}
             Row {
@@ -28,6 +32,44 @@ UApplicationWindow{
                     id: uCBAudioDevices
                     width: parent.width-labelDevices.contentWidth+app.fs*2
                     anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+            Rectangle{
+                id: xTaCurretCmd
+                width: xApp.width*0.8
+                height: app.fs*10
+                color: app.c1
+                border.width: 1
+                border.color: app.c2
+                anchors.horizontalCenter: parent.horizontalCenter
+                visible: false
+                UTextArea{
+                    id: taCurrentCmd
+                    width: parent.width
+                    height: parent.height
+                    wrapMode: Text.WordWrap
+                    anchors.centerIn: parent
+                }
+            }
+            Row{
+                spacing: app.fs
+                BotonUX{
+                    text: xTaCurretCmd.visible?'Ocultar Linea de Comando':'Ver Linea de Comando'
+                    onClicked: {
+                        if(!xTaCurretCmd.visible){
+                            uqp.setCmd()
+                            taCurrentCmd.text=uqp.cmd
+                            xTaCurretCmd.visible=true
+                        }else{
+                            xTaCurretCmd.visible=false
+                        }
+                    }
+                }
+                BotonUX{
+                    text: 'Copiar'
+                    onClicked: {
+                        clipboard.setText(taCurrentCmd.text)
+                    }
                 }
             }
             BotonUX{
@@ -95,15 +137,31 @@ UApplicationWindow{
         }
         function init(){
             setCmd()
-            run(cmd, false)
+            if(!xTaCurretCmd.visible){
+                run(cmd, false)
+            }else{
+                run(taCurrentCmd.text, false)
+            }
+
         }
         function setCmd(){
             if(app.streamKey===''){
                 app.l('No se ha ingresado la clave/llave de stream.')
                 return
             }
-            let vINRES="1280x720"
-            let vOUTRES="1280x720"
+            let vINRES=""+Screen.width+"x"+Screen.height+""
+            if(Qt.application.arguments.toString().indexOf('-inRes=')>=0){
+                let m0=Qt.application.arguments.toString().split('-inRes=')
+                let m1=m0[1].split(' ')
+                vINRES=m1[0]
+            }
+            let vOUTRES=vINRES //Mediante el parametro -outRes=1280x720 se puede definir como otra resolucion de salida.
+            if(Qt.application.arguments.toString().indexOf('-outRes=')>=0){
+                let m0=Qt.application.arguments.toString().split('-outRes=')
+                let m1=m0[1].split(' ')
+                vOUTRES=m1[0]
+            }
+
             let vFPS="10"
             let vGOP="60"
             let vGOPMIN="30"
@@ -121,7 +179,7 @@ UApplicationWindow{
                         +'-bufsize '+vCBR+' "rtmp://'+vSERVER+'.twitch.tv/app/'+vSTREAM_KEY+'"'
             }
             if(Qt.platform.os==='linux'){
-                uqp.cmd='ffmpeg -f x11grab -s '+vINRES+'  -r '+vFPS+' -r 25 -i :0.0+0,0 -f pulse -i mimodulo.monitor  -f flv -ac 2 -ar '+vAUDIO_RATE+' '
+                uqp.cmd='ffmpeg -f x11grab -s '+vINRES+'  -r '+vFPS+' -r 25 -i :0.0+0,0 -f pulse -i default  -f flv -ac 2 -ar '+vAUDIO_RATE+' '
                         +'-vcodec libx264 -g '+vGOP+' -keyint_min '+vGOPMIN+' -b:v '+vCBR+' -minrate '+vCBR+' -maxrate '+vCBR+' -pix_fmt yuv420p '
                         +'-s '+vOUTRES+' -preset '+vQUALITY+' -tune film -acodec aac -threads '+vTHREADS+' -strict -2 '
                         +'-bufsize '+vCBR+' "rtmp://'+vSERVER+'.twitch.tv/app/'+vSTREAM_KEY+'"'
